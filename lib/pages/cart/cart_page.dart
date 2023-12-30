@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 import "package:jollyfish/constants.dart";
 import "package:jollyfish/widgets/cart_item.dart";
 
@@ -156,7 +157,9 @@ class CartPage extends StatelessWidget {
                   elevation: 0,
                   height: 44,
                   minWidth: 400,
-                  onPressed: () {},
+                  onPressed: () {
+                    context.goNamed("Checkout");
+                  },
                   color: accentColor,
                   textColor: Colors.white,
                   child: Text(

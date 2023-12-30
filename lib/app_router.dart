@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jollyfish/navigation_menu.dart';
 import 'package:jollyfish/pages/cart/cart_page.dart';
+import 'package:jollyfish/pages/checkout/checkout_page.dart';
 import 'package:jollyfish/pages/home/home_page.dart';
 import 'package:jollyfish/pages/home/product_page.dart';
 import 'package:jollyfish/pages/notification/notification_page.dart';
@@ -57,6 +58,15 @@ class AppRouter {
                 builder: (context, state) => CartPage(
                   key: state.pageKey,
                 ),
+                routes: [
+                  GoRoute(
+                    path: "checkout",
+                    name: "Checkout",
+                    builder: (context, state) => CheckoutPage(
+                      key: state.pageKey,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -81,6 +91,18 @@ class AppRouter {
                 builder: (context, state) => MainProfilePage(
                   key: state.pageKey,
                 ),
+                routes: [
+                  GoRoute(path: "info", name: "Information"),
+                  GoRoute(
+                    path: "orders",
+                    name: "Orders",
+                    routes: [
+                      GoRoute(path: "order", name: "Order Details"),
+                    ],
+                  ),
+                  GoRoute(path: "password", name: "Update Password"),
+                  GoRoute(path: "report", name: "Report A Problem"),
+                ],
               ),
             ],
           ),
