@@ -1,10 +1,34 @@
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 import "package:jollyfish/constants.dart";
+import "package:jollyfish/models/user_model.dart";
+import "package:jollyfish/widgets/input_button.dart";
 import "package:jollyfish/widgets/notif_item.dart";
 import "package:jollyfish/widgets/profile_button.dart";
 
-class MainProfilePage extends StatelessWidget {
+class MainProfilePage extends StatefulWidget {
   const MainProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<MainProfilePage> createState() => _MainProfilePageState();
+}
+
+class _MainProfilePageState extends State<MainProfilePage> {
+  String? fullName = "";
+  String? phoneNo = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,39 +44,38 @@ class MainProfilePage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.white),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                            "https://pbs.twimg.com/media/EuNNxftXcAE1CyG.jpg"),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Franz Dainell Valones",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      "+63 918-463-9221",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     border: Border.all(width: 2, color: Colors.white),
+                    //     borderRadius: BorderRadius.circular(100),
+                    //   ),
+                    //   child: ClipRRect(
+                    //     borderRadius: BorderRadius.circular(100),
+                    //     child: Image.network(
+                    //       width: 100,
+                    //       height: 100,
+                    //       fit: BoxFit.cover,
+                    //       "https://pbs.twimg.com/media/EuNNxftXcAE1CyG.jpg",
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 8),
+                    // Text(
+                    //   fullName ?? '',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: 18,
+                    //   ),
+                    // ),
+                    // Text(
+                    //   phoneNo ?? '',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: 16,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -75,6 +98,9 @@ class MainProfilePage extends StatelessWidget {
                     color: Color(0xFF00B4B4),
                   ),
                   iconColor: Color(0xFFDDFFFF),
+                  action: () {
+                    context.goNamed("Update Profile");
+                  },
                 ),
                 ProfileButton(
                   name: "My Orders",
@@ -83,6 +109,9 @@ class MainProfilePage extends StatelessWidget {
                     color: Color(0xFF059D00),
                   ),
                   iconColor: Color(0xFFDEFFDD),
+                  action: () {
+                    context.goNamed("Orders");
+                  },
                 ),
                 ProfileButton(
                   name: "Change Password",
@@ -91,14 +120,29 @@ class MainProfilePage extends StatelessWidget {
                     color: Color(0xFFA3A800),
                   ),
                   iconColor: Color(0xFFFEFFDD),
+                  action: () {
+                    context.goNamed("Change Password");
+                  },
                 ),
                 ProfileButton(
-                    name: "Report A Problem",
-                    icon: Icon(
-                      Icons.warning,
-                      color: Color(0xFFA10000),
-                    ),
-                    iconColor: Color(0xFFFFDDDD))
+                  name: "Report A Problem",
+                  icon: Icon(
+                    Icons.warning,
+                    color: Color(0xFFA10000),
+                  ),
+                  iconColor: Color(0xFFFFDDDD),
+                  action: () {
+                    context.goNamed("Report");
+                  },
+                ),
+                InputButton(
+                  label: "Logout",
+                  function: () {
+                    FirebaseAuth.instance.signOut();
+                    context.goNamed('Login');
+                  },
+                  large: true,
+                ),
               ],
             ),
           )

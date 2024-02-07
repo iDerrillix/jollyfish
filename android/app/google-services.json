@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "673850109584",
+    "project_id": "jollyfish-7593e",
+    "storage_bucket": "jollyfish-7593e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673850109584:android:1ab5f9055c3e8defddb215",
+        "android_client_info": {
+          "package_name": "com.example.jollyfish"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACVvNPJhCxIhWV-qrVoRCuHi4po7DfjaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

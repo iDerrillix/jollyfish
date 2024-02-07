@@ -1,12 +1,19 @@
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:jollyfish/models/user_model.dart";
 import "package:jollyfish/navigation_menu.dart";
 import "package:jollyfish/pages/home/product_page.dart";
 import "package:jollyfish/widgets/product_tile.dart";
 import 'package:jollyfish/constants.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,55 +176,31 @@ class HomePage extends StatelessWidget {
               SizedBox(
                 height: 8,
               ),
-              Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                runSpacing: 8,
-                spacing: 8,
+              Row(
                 children: [
-                  ProductTile(
-                    imgPath:
-                        "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                    name: "Clownfish",
-                    stock: 120,
-                    price: 666.66,
+                  Expanded(
+                    child: ProductTile(
+                      imgPath:
+                          "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
+                      name: "Clownfish",
+                      stock: 120,
+                      price: 666.66,
+                    ),
                   ),
-                  ProductTile(
-                    imgPath:
-                        "https://files.worldwildlife.org/wwfcmsprod/images/Whale_Shark_Homepage_Image/story_full_width/7a2odg1xq_Whale_Shark_Homepage.jpg",
-                    name: "Whale Shark",
-                    stock: 1,
-                    price: 9999999.99,
+                  SizedBox(
+                    width: 8,
                   ),
-                  ProductTile(
-                    imgPath:
-                        "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                    name: "Clownfish",
-                    stock: 120,
-                    price: 666.66,
-                  ),
-                  ProductTile(
-                    imgPath:
-                        "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                    name: "Clownfish",
-                    stock: 120,
-                    price: 666.66,
-                  ),
-                  ProductTile(
-                    imgPath:
-                        "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                    name: "Clownfish",
-                    stock: 120,
-                    price: 666.66,
-                  ),
-                  ProductTile(
-                    imgPath:
-                        "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                    name: "Clownfish",
-                    stock: 120,
-                    price: 666.66,
+                  Expanded(
+                    child: ProductTile(
+                      imgPath:
+                          "https://files.worldwildlife.org/wwfcmsprod/images/Whale_Shark_Homepage_Image/story_full_width/7a2odg1xq_Whale_Shark_Homepage.jpg",
+                      name: "Whale Shark",
+                      stock: 1,
+                      price: 9999999.99,
+                    ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),

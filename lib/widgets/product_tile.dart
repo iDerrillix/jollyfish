@@ -30,7 +30,6 @@ class ProductTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           color: Colors.white,
         ),
-        width: 190,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
