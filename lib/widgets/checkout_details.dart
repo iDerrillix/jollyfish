@@ -50,6 +50,7 @@ class CheckoutDetails extends StatelessWidget {
                     children: [
                       Text(
                         heading,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: majorText,
                           fontSize: 16,
@@ -58,6 +59,7 @@ class CheckoutDetails extends StatelessWidget {
                       ),
                       Text(
                         body,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: minorText,
                           fontSize: 16,

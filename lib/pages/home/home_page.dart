@@ -1,10 +1,13 @@
-import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/material.dart";
-import "package:jollyfish/models/user_model.dart";
-import "package:jollyfish/navigation_menu.dart";
-import "package:jollyfish/pages/home/product_page.dart";
-import "package:jollyfish/widgets/product_tile.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jollyfish/app_router.dart';
 import 'package:jollyfish/constants.dart';
+import 'package:jollyfish/models/product_model.dart';
+import 'package:jollyfish/models/shopping_cart_model.dart';
+import 'package:jollyfish/utilities.dart';
+import 'package:jollyfish/widgets/product_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,7 +16,60 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late Future<Map<String, List<Map<String, dynamic>>>>
+      categoriesWithProductsFuture;
+  late Future<List<Map<String, dynamic>>> categories;
+  late TabController _tabController;
+  List<String> categoryNames = [];
+
+  late Future<List<Map<String, dynamic>>> allCategoriesWithEachProducts;
+
+  @override
+  void initState() {
+    super.initState();
+
+    checkUserType();
+
+    // ShoppingCartModel();
+
+    categories = ProductModel().getCategories();
+
+    categories.then((categoriesList) {
+      _tabController =
+          TabController(length: categoriesList.length + 1, vsync: this);
+    });
+
+    allCategoriesWithEachProducts = ProductModel().getCategoriesWithItems();
+    // fetchCategories();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void checkUserType() async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+
+    if (documentSnapshot.exists) {
+      Map<String, dynamic> userDetails =
+          documentSnapshot.data() as Map<String, dynamic>;
+
+      if (userDetails['user_type'] == 'Customer') {
+        AppRouter.initR = "/home";
+      } else {
+        AppRouter.initR = "/dashboard";
+        context.goNamed("Dashboard");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,9 +79,10 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           "JollyFish",
           style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFFFA800)),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFFFFA800),
+          ),
         ),
         centerTitle: false,
       ),
@@ -49,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Padding(
+              const Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8),
                 child: TextField(
                   decoration: InputDecoration(
@@ -68,38 +125,35 @@ class _HomePageState extends State<HomePage> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                       borderSide: BorderSide(
-                          color:
-                              accentColor), // Change the border color for the focused state
+                        color: accentColor,
+                      ), // Change the border color for the focused state
                     ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(
-                        right: 8,
-                      ),
+                      padding: const EdgeInsets.only(right: 8),
                       child: Container(
                         width: 360,
                         height: 180,
                         decoration: BoxDecoration(
-                            color: Color(0xFFFFA800),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16))),
+                          color: Color(0xFFFFA800),
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                        ),
                       ),
                     ),
                     Container(
                       width: 360,
                       height: 180,
                       decoration: BoxDecoration(
-                          color: Color(0xFFFFA800),
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                        color: Color(0xFFFFA800),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                     ),
                   ],
                 ),
@@ -107,100 +161,107 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 16,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: FilledButton(
-                        onPressed: () {},
-                        child: Text("Category"),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Color(0xFFFFA800),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: FilledButton(
-                        onPressed: () {},
-                        child: Text("Category"),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Color(0xFFFFA800),
-                          backgroundColor: Colors.transparent,
-                          side: BorderSide(
-                            color:
-                                Color(0xFFFFA800), // Specify the border color
-                            width: 2.0, // Specify the border width
+              FutureBuilder(
+                future: allCategoriesWithEachProducts,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return Utilities.showSnackBar(
+                        "Something went wrong",
+                        Colors.red,
+                      );
+                    }
+                    int productsLength = 0;
+                    List<Map<String, dynamic>> categoriesList = snapshot.data!;
+
+                    List<Tab> tabs = categoriesList.map((category) {
+                      return Tab(
+                        text: category['name'],
+                      );
+                    }).toList();
+
+                    List<Widget> tabBarViews = [];
+                    List<Widget> allProductTiles = [];
+
+                    // Iterate through each category map
+                    for (Map<String, dynamic> category in categoriesList) {
+                      // Get the 'items' list inside the category map
+                      List<Map<String, dynamic>> itemsList = category['items'];
+
+                      List<Widget> productTiles = [];
+                      // Iterate through each item in the 'items' list
+                      for (Map<String, dynamic> item in itemsList) {
+                        // Access the properties of each item
+                        String itemName = item['name'];
+                        String itemDetails = item['details'];
+                        double itemPrice = item['price'].toDouble();
+                        int itemStock = item['stock'].toInt();
+                        String itemImagePath = item['imagePath'];
+                        String product_id = item['product_id'];
+
+                        productTiles.add(
+                          ProductTile(
+                            imgPath: itemImagePath,
+                            name: itemName,
+                            stock: itemStock,
+                            price: itemPrice,
+                            product_id: product_id,
                           ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: FilledButton(
-                        onPressed: () {},
-                        child: Text("Category"),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Color(0xFFFFA800),
-                          backgroundColor: Colors.transparent,
-                          side: BorderSide(
-                            color:
-                                Color(0xFFFFA800), // Specify the border color
-                            width: 2.0, // Specify the border width
+                        );
+
+                        productsLength++;
+                        allProductTiles.add(
+                          ProductTile(
+                            imgPath: itemImagePath,
+                            name: itemName,
+                            stock: itemStock,
+                            price: itemPrice,
+                            product_id: product_id,
                           ),
+                        );
+                      }
+                      tabBarViews.add(Column(
+                        children: productTiles,
+                      ));
+                    }
+
+                    tabs.add(Tab(text: 'All Products'));
+                    tabBarViews.add(Column(
+                      children: allProductTiles,
+                    ));
+
+                    return DefaultTabController(
+                      length: tabs.length,
+                      child: Container(
+                        height: 300.0 * productsLength,
+                        child: Column(
+                          children: [
+                            TabBar(
+                              isScrollable: true,
+                              indicatorColor: accentColor,
+                              unselectedLabelColor: minorText,
+                              labelColor: accentColor,
+                              tabs: tabs,
+                              controller: _tabController,
+                            ),
+                            Expanded(
+                              // Wrap TabBarView with Expanded widget
+                              child: TabBarView(
+                                children: tabBarViews,
+                                controller: _tabController,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: FilledButton(
-                        onPressed: () {},
-                        child: Text("Category"),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Color(0xFFFFA800),
-                          backgroundColor: Colors.transparent,
-                          side: BorderSide(
-                            color:
-                                Color(0xFFFFA800), // Specify the border color
-                            width: 2.0, // Specify the border width
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
               ),
-              SizedBox(
-                height: 8,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ProductTile(
-                      imgPath:
-                          "https://petessentialswhangarei.co.nz/portals/27/fish1.jpg",
-                      name: "Clownfish",
-                      stock: 120,
-                      price: 666.66,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Expanded(
-                    child: ProductTile(
-                      imgPath:
-                          "https://files.worldwildlife.org/wwfcmsprod/images/Whale_Shark_Homepage_Image/story_full_width/7a2odg1xq_Whale_Shark_Homepage.jpg",
-                      name: "Whale Shark",
-                      stock: 1,
-                      price: 9999999.99,
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),

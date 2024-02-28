@@ -29,4 +29,17 @@ class Utilities {
       ),
     );
   }
+
+  static showLoadingIndicatorReworked(context, buildcontext) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          buildcontext = context;
+          return Center(
+            child: CircularProgressIndicator(
+              color: accentColor,
+            ),
+          );
+        });
+  }
 }

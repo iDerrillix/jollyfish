@@ -9,11 +9,13 @@ class NotifItem extends StatelessWidget {
   final String name;
   final String description;
   final String type;
+  final String date;
   const NotifItem({
     Key? key,
     required this.name,
     required this.description,
     required this.type,
+    required this.date,
   }) : super(key: key);
 
   @override
@@ -26,12 +28,11 @@ class NotifItem extends StatelessWidget {
     } else if (type == "Error") {
       color = errorColor;
     } else {
-      color = Colors.amber;
+      color = Color.fromARGB(255, 255, 233, 199);
     }
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Container(
-        height: 64,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: Colors.white,
@@ -47,46 +48,63 @@ class NotifItem extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(8),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.zero,
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: color,
-                ),
-                child: Center(
-                  child: Icon(Icons.warning, color: Colors.white),
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: majorText,
+                  Container(
+                    padding: EdgeInsets.zero,
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: color,
+                    ),
+                    child: Center(
+                      child: Icon(Icons.notification_add, color: accentColor),
                     ),
                   ),
                   SizedBox(
-                    height: 4,
+                    width: 8,
                   ),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: minorText,
+                  SizedBox(
+                    width: 190,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: majorText,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          description,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: minorText,
+                          ),
+                        )
+                      ],
                     ),
-                  )
+                  ),
                 ],
-              )
+              ),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: minorText,
+                ),
+              ),
             ],
           ),
         ),

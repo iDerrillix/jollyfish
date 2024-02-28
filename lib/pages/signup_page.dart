@@ -56,6 +56,8 @@ class _SignupPageState extends State<SignupPage> {
         'city': _cityController.text.trim(),
         'province': _provinceController.text.trim(),
         'email_address': _emailController.text.trim(),
+        'shopping_cart': [],
+        'user_type': 'Customer',
       });
 
       context.goNamed("Login");

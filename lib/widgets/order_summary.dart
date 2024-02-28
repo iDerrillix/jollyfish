@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 import "package:jollyfish/constants.dart";
 import "package:jollyfish/widgets/notif_item.dart";
 
@@ -20,7 +21,7 @@ class OrderSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: action,
+      onTap: () => context.go('/profile/orders/order-details/${orderNum}'),
       child: Padding(
         padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Container(
@@ -63,42 +64,36 @@ class OrderSummary extends StatelessWidget {
                     width: 8,
                   ),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Order No. 696969",
-                        style: TextStyle(
-                          color: majorText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(
+                        width: 150,
+                        child: Text(
+                          "${orderNum}",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: majorText,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Container(
-                        width: 120,
-                        padding: EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 8,
-                          bottom: 8,
+                      Text(
+                        "${date}",
+                        style: TextStyle(
+                          color: minorText,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(44),
-                          border: Border.all(
-                            color: Color(0xFF42FF00),
-                            width: 1,
-                          ),
+                      ),
+                      Text(
+                        "${status}",
+                        style: TextStyle(
+                          color: _getStatusColor(status),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
                         ),
-                        child: Center(
-                          child: Text(
-                            "Completed",
-                            style: TextStyle(
-                              color: Color(0xFF42FF00),
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      )
+                      ),
                     ],
                   )
                 ],
@@ -107,15 +102,7 @@ class OrderSummary extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "12-31-2023",
-                    style: TextStyle(
-                      color: minorText,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    "P999.99",
+                    "P${total}",
                     style: TextStyle(
                       color: accentColor,
                       fontSize: 20,
@@ -129,5 +116,16 @@ class OrderSummary extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Complete':
+        return Colors.green;
+      case 'Cancelled':
+        return Colors.red;
+      default:
+        return Colors.amber;
+    }
   }
 }

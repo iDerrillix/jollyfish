@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jollyfish/app_router.dart';
 import 'package:jollyfish/constants.dart';
 import 'package:jollyfish/utilities.dart';
 import 'package:jollyfish/widgets/input_button.dart';
@@ -15,6 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _isMounted = false;
   String errorMessage = "";
   final formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -36,12 +39,32 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text.trim(),
       );
 
-      FirebaseAuth.instance.userChanges().listen((User? user) {
+      FirebaseAuth.instance.userChanges().listen((User? user) async {
         if (user == null) {
           print('User is currently signed out!');
         } else {
           print('User is signed in!');
-          context.goNamed("Home");
+          DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser?.uid)
+              .get();
+
+          if (documentSnapshot.exists) {
+            Map<String, dynamic> userDetails =
+                documentSnapshot.data() as Map<String, dynamic>;
+
+            if (_isMounted) {
+              if (userDetails['user_type'] == 'Customer') {
+                AppRouter.initR = "/home";
+                context.goNamed("Home");
+              } else {
+                AppRouter.initR = "/dashboard";
+                context.goNamed("Dashboard");
+              }
+            }
+          } else {
+            Utilities.showSnackBar("User not in collection", Colors.red);
+          }
         }
       });
     } on FirebaseAuthException catch (ex) {
@@ -62,6 +85,19 @@ class _LoginPageState extends State<LoginPage> {
       Utilities.showSnackBar(errorMessage, Colors.red);
       Navigator.of(context).pop();
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _isMounted = true;
+  }
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
   }
 
   @override

@@ -2,7 +2,18 @@ import "package:flutter/material.dart";
 import "package:jollyfish/constants.dart";
 
 class CheckoutItem extends StatelessWidget {
-  const CheckoutItem({Key? key}) : super(key: key);
+  final String imagePath;
+  final String name;
+  final double price;
+  final int quantity;
+
+  const CheckoutItem(
+      {Key? key,
+      required this.imagePath,
+      required this.name,
+      required this.price,
+      required this.quantity})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +28,7 @@ class CheckoutItem extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                    fit: BoxFit.cover,
-                    height: 64,
-                    width: 64,
-                    "https://www.thesprucepets.com/thmb/b6ck4PC5poXK75uwtOCUF8Z5UG0=/3008x0/filters:no_upscale():strip_icc()/GettyImages-165355962-7529444d03544186ba8ff1b635692407.jpg"),
+                    fit: BoxFit.cover, height: 64, width: 64, imagePath),
               ),
               SizedBox(
                 width: 8,
@@ -29,14 +37,14 @@ class CheckoutItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Product Name",
+                    name,
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: majorText),
                   ),
                   Text(
-                    "P999.99",
+                    "P${price}",
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -47,7 +55,7 @@ class CheckoutItem extends StatelessWidget {
             ],
           ),
           Text(
-            "QTY: 99",
+            "QTY: $quantity",
             style: TextStyle(
               color: minorText,
             ),

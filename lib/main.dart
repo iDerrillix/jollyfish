@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:jollyfish/app_router.dart';
 import 'package:jollyfish/constants.dart';
 import 'package:jollyfish/firebase_options.dart';
+import 'package:jollyfish/models/shopping_cart_model.dart';
 import 'package:jollyfish/navigation_menu.dart';
 import 'package:jollyfish/pages/cart/cart_page.dart';
 import 'package:jollyfish/pages/home/home_page.dart';
@@ -13,6 +14,7 @@ import 'package:jollyfish/pages/notification/notification_page.dart';
 import 'package:jollyfish/pages/profile/main_profile_page.dart';
 import 'package:jollyfish/utilities.dart';
 import 'package:jollyfish/widgets/profile_button.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,62 +23,13 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
-}
-
-GoRouter router = GoRouter(
-  routes: [
-    ShellRoute(
-      routes: [
-        GoRoute(
-            path: "/home",
-            builder: (context, state) => const HomePage(),
-            routes: [
-              GoRoute(
-                path: "/product",
-                builder: (context, state) => ProductPage(),
-              ),
-            ]),
-        GoRoute(
-          path: "/cart",
-          builder: (context, state) => const CartPage(),
-          routes: [
-            GoRoute(
-              path: "/checkout",
-              builder: (context, state) => Container(),
-            ),
-          ],
-        ),
-        GoRoute(
-          path: "/notification",
-          builder: (context, state) => const NotificationPage(),
-        ),
-        GoRoute(
-          path: "/mainprofile",
-          builder: (context, state) => const MainProfilePage(),
-          routes: [
-            GoRoute(
-              path: "/profile",
-              builder: (context, state) => Container(),
-            ),
-            GoRoute(
-              path: "/orders",
-              builder: (context, state) => Container(),
-            ),
-            GoRoute(
-              path: "/password",
-              builder: (context, state) => Container(),
-            ),
-            GoRoute(
-              path: "/report",
-              builder: (context, state) => Container(),
-            ),
-          ],
-        ),
-      ],
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ShoppingCartModel(),
+      child: MyApp(),
     ),
-  ],
-);
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -89,6 +42,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "JollyFish",
       theme: ThemeData(
+        useMaterial3: true,
         buttonTheme: ButtonThemeData(
           buttonColor: accentColor,
         ),
